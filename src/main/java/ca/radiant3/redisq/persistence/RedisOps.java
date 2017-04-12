@@ -1,9 +1,9 @@
 package ca.radiant3.redisq.persistence;
 
-import ca.radiant3.redisq.serialization.JaxbPayloadSerializer;
 import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.serialization.DefaultMessageConverter;
+import ca.radiant3.redisq.serialization.GsonPayloadSerializer;
 import ca.radiant3.redisq.serialization.MessageConverter;
 import ca.radiant3.redisq.serialization.PayloadSerializer;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +21,7 @@ public class RedisOps {
     private RedisTemplate redisTemplate;
 
     @Autowired(required = false)
-    private PayloadSerializer payloadSerializer = new JaxbPayloadSerializer();
+    private PayloadSerializer payloadSerializer = new GsonPayloadSerializer();
     @Autowired(required = false)
     private MessageConverter messageConverter = new DefaultMessageConverter();
 

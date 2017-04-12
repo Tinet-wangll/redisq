@@ -2,6 +2,9 @@ package ca.radiant3.redisq;
 
 import java.util.Calendar;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Message<T> {
     private String id;
     private Calendar creation;

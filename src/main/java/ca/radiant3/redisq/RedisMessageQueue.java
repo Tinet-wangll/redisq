@@ -11,7 +11,7 @@ import java.util.Collection;
 
 public class RedisMessageQueue implements MessageQueue {
 
-    private static final String DEFAULT_CONSUMER_ID = "default";
+    private static final String DEFAULT_CONSUMER_ID =System.getenv("HOSTNAME");
 
     @Autowired
     private RedisOps redisOps;
