@@ -136,7 +136,7 @@ public class MessageConsumer<T> {
     }
 
     public void setConsumerId(String consumerId) {
-        this.consumerId = consumerId;
+        this.consumerId = consumerId + queue.getDefaultConsumerId();
     }
 
     public void setRedisOps(RedisOps redisOps) {
