@@ -62,7 +62,7 @@ public class MessageConsumer<T> {
 
     @PostConstruct
     public void initialize() {
-        consumerId = (consumerId == null) ? queue.getDefaultConsumerId() : queue.getDefaultConsumerId() + consumerId;
+        consumerId = (consumerId == null) ? queue.getDefaultConsumerId() : consumerId;
 
         if (StringUtils.isEmpty(consumerId)) {
             throw new IllegalStateException("Consumer ID is not set but is mandatory.");
@@ -136,7 +136,7 @@ public class MessageConsumer<T> {
     }
 
     public void setConsumerId(String consumerId) {
-        this.consumerId = consumerId + queue.getDefaultConsumerId();
+        this.consumerId = consumerId;
     }
 
     public void setRedisOps(RedisOps redisOps) {
