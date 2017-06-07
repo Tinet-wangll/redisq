@@ -67,7 +67,6 @@ public class MessageConsumer<T> {
         if (StringUtils.isEmpty(consumerId)) {
             throw new IllegalStateException("Consumer ID is not set but is mandatory.");
         }
-
         String queueName = queue.getQueueName();
 
         redisOps.ensureConsumerRegistered(queueName, consumerId);

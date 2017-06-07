@@ -18,7 +18,7 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
     private MessageQueue queue;
 
     private long defaultTimeToLive = 1;
-    private TimeUnit defaultTimeToLiveUnit = TimeUnit.DAYS;
+    private TimeUnit defaultTimeToLiveUnit = TimeUnit.HOURS;
     private SubmissionStrategy submissionStrategy;
 
     @PostConstruct
