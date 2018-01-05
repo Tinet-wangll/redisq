@@ -17,7 +17,6 @@ import static ca.radiant3.redisq.utils.KeysFactory.*;
 
 public class RedisOps {
 
-    @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired(required = false)
