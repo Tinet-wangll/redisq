@@ -1,5 +1,14 @@
 package ca.radiant3.redisq.consumer;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
+
 import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.consumer.retry.MessageRetryStrategy;
@@ -10,14 +19,6 @@ import ca.radiant3.redisq.producer.MessageProducer;
 import ca.radiant3.redisq.queuing.FIFOQueueDequeueStrategy;
 import ca.radiant3.redisq.queuing.LockingQueueDequeueStrategyWrapper;
 import ca.radiant3.redisq.utils.GenericsUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.RedisConnectionFailureException;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 /**
  * A message consumer monitors messages from a MessageQueue continuously, and when a message
@@ -62,7 +63,7 @@ public class MessageConsumer<T> {
 
     @PostConstruct
     public void initialize() {
-        consumerId = (consumerId == null) ? queue.getDefaultConsumerId() : queue.getDefaultConsumerId() + consumerId;
+        consumerId = (consumerId == null) ? queue.getDefaultConsumerId() : consumerId;
 
         if (StringUtils.isEmpty(consumerId)) {
             throw new IllegalStateException("Consumer ID is not set but is mandatory.");
@@ -72,15 +73,30 @@ public class MessageConsumer<T> {
 
         redisOps.ensureConsumerRegistered(queueName, consumerId);
 
-        log.debug(String.format("Registered as consumer ID [%s] on queue [%s]", consumerId, queueName));
+        log.info(String.format("Registered as consumer ID [%s] on queue [%s]", consumerId, queueName));
 
         payloadType = extractMessagePayloadTypeFromListener();
 
-        log.debug(String.format("Handling payloads from messages in queue [%s] as objects of class [%s]", queueName, payloadType));
+        log.info(String.format("Handling payloads from messages in queue [%s] as objects of class [%s]", queueName, payloadType));
 
         if (autoStartConsumers) {
             startConsumer();
         }
+    }
+    
+    public void deleteRegistered() {
+        consumerId = (consumerId == null) ? queue.getDefaultConsumerId() : consumerId;
+
+        if (StringUtils.isEmpty(consumerId)) {
+        	log.info(String.format("delete consumer ID [%s]", consumerId));
+            throw new IllegalStateException("Consumer ID is not set but is mandatory.");
+        }
+
+        String queueName = queue.getQueueName();
+
+        redisOps.deleteConsumerRegistered(queueName, consumerId);
+
+        log.info(String.format("delete consumer ID [%s] on queue [%s]", consumerId, queueName));
     }
 
     public void startConsumer() {
@@ -103,6 +119,7 @@ public class MessageConsumer<T> {
 
     @PreDestroy
     public void stopConsumer() {
+    	deleteRegistered();
         threadingStrategy.stop();
     }
 
@@ -136,7 +153,7 @@ public class MessageConsumer<T> {
     }
 
     public void setConsumerId(String consumerId) {
-        this.consumerId = consumerId + queue.getDefaultConsumerId();
+        this.consumerId = consumerId;
     }
 
     public void setRedisOps(RedisOps redisOps) {

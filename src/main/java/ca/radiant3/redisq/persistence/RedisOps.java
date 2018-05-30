@@ -30,6 +30,12 @@ public class RedisOps {
         BoundSetOperations<String, String> ops = redisTemplate.boundSetOps(keyForRegisteredConsumers(queueName));
         ops.add(consumerId);
     }
+    
+    @SuppressWarnings("unchecked")
+    public void deleteConsumerRegistered(String queueName, String consumerId) {
+        BoundSetOperations<String, String> ops = redisTemplate.boundSetOps(keyForRegisteredConsumers(queueName));
+        ops.remove(consumerId);
+    }
 
     @SuppressWarnings("unchecked")
     public Collection<String> getRegisteredConsumers(String queueName) {

@@ -6,7 +6,7 @@
 
     <groupId>ca.radiant3</groupId>
     <artifactId>redisq</artifactId>
-    <version>1.5.0-TINET</version>
+    <version>1.6.0-TINET</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -93,6 +93,22 @@
     </dependencies>
 
     <build>
+	    <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
