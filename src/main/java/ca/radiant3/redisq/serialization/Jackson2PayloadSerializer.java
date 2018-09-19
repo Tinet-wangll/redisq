@@ -1,14 +1,22 @@
 package ca.radiant3.redisq.serialization;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.data.redis.serializer.SerializationException;
-
 import java.io.IOException;
 
-public class Jackson2PayloadSerializer implements PayloadSerializer {
-    private ObjectMapper mapper = new ObjectMapper();
+import org.springframework.data.redis.serializer.SerializationException;
 
-    public String serialize(Object payload) throws SerializationException {
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+
+public class Jackson2PayloadSerializer implements PayloadSerializer {
+    private ObjectMapper mapper;
+
+    public Jackson2PayloadSerializer() {
+    	mapper = new ObjectMapper();
+    	mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+	}
+
+	public String serialize(Object payload) throws SerializationException {
         try {
             return mapper.writeValueAsString(payload);
         } catch (IOException e) {

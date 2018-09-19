@@ -25,7 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.serialization.DefaultMessageConverter;
-import ca.radiant3.redisq.serialization.GsonPayloadSerializer;
+import ca.radiant3.redisq.serialization.Jackson2PayloadSerializer;
 import ca.radiant3.redisq.serialization.MessageConverter;
 import ca.radiant3.redisq.serialization.PayloadSerializer;
 
@@ -34,7 +34,7 @@ public class RedisOps {
     private RedisTemplate redisTemplate;
 
     @Autowired(required = false)
-    private PayloadSerializer payloadSerializer = new GsonPayloadSerializer();
+    private PayloadSerializer payloadSerializer = new Jackson2PayloadSerializer();
     @Autowired(required = false)
     private MessageConverter messageConverter = new DefaultMessageConverter();
 
