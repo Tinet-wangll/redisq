@@ -1,23 +1,36 @@
 package ca.radiant3.redisq.persistence;
 
+import static ca.radiant3.redisq.utils.KeysFactory.keyForConsumerSpecificQueue;
+import static ca.radiant3.redisq.utils.KeysFactory.keyForConsumerSpecificQueueLock;
+import static ca.radiant3.redisq.utils.KeysFactory.keyForConsumerSpecificQueueNotificationList;
+import static ca.radiant3.redisq.utils.KeysFactory.keyForMessage;
+import static ca.radiant3.redisq.utils.KeysFactory.keyForNextID;
+import static ca.radiant3.redisq.utils.KeysFactory.keyForRegisteredConsumers;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.BoundListOperations;
+import org.springframework.data.redis.core.BoundSetOperations;
+import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+
 import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.serialization.DefaultMessageConverter;
 import ca.radiant3.redisq.serialization.GsonPayloadSerializer;
 import ca.radiant3.redisq.serialization.MessageConverter;
 import ca.radiant3.redisq.serialization.PayloadSerializer;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.*;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import static ca.radiant3.redisq.utils.KeysFactory.*;
 
 public class RedisOps {
 
-    @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired(required = false)

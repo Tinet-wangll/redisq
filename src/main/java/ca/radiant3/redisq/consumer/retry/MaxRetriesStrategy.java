@@ -1,17 +1,16 @@
 package ca.radiant3.redisq.consumer.retry;
 
-import ca.radiant3.redisq.persistence.RedisOps;
-import ca.radiant3.redisq.Message;
-import ca.radiant3.redisq.MessageQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.radiant3.redisq.Message;
+import ca.radiant3.redisq.MessageQueue;
+import ca.radiant3.redisq.persistence.RedisOps;
 
 public class MaxRetriesStrategy<T> implements MessageRetryStrategy<T>{
 
     private static final Logger log = LoggerFactory.getLogger(MaxRetriesStrategy.class);
 
-    @Autowired
     private RedisOps redisOps;
 
     private int maxRetries;

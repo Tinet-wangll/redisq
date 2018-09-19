@@ -1,18 +1,18 @@
 package ca.radiant3.redisq.producer;
 
-import ca.radiant3.redisq.Message;
-import ca.radiant3.redisq.MessageQueue;
-import ca.radiant3.redisq.persistence.RedisOps;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.StringUtils;
+
+import ca.radiant3.redisq.Message;
+import ca.radiant3.redisq.MessageQueue;
+import ca.radiant3.redisq.persistence.RedisOps;
+
 public class MessageProducerImpl<T> implements MessageProducer<T> {
 
-    @Autowired
     private RedisOps redisOps;
 
     private MessageQueue queue;

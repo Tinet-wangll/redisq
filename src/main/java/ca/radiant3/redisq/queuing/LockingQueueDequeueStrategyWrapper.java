@@ -1,10 +1,9 @@
 package ca.radiant3.redisq.queuing;
 
+import java.util.concurrent.TimeUnit;
+
 import ca.radiant3.redisq.consumer.MessageCallback;
 import ca.radiant3.redisq.persistence.RedisOps;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Strategy for dequeuing messages based on a lock stored in Redis. The lock is stored as a Redis value in a
@@ -17,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class LockingQueueDequeueStrategyWrapper implements QueueDequeueStrategy {
 
-    @Autowired
     private RedisOps redisOps;
 
     private long lockExpirationTimeout = 5;

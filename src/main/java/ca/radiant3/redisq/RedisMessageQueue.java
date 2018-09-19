@@ -1,19 +1,18 @@
 package ca.radiant3.redisq;
 
+import java.util.Collection;
+
+import javax.annotation.PostConstruct;
+
 import ca.radiant3.redisq.consumer.MessageCallback;
 import ca.radiant3.redisq.persistence.RedisOps;
 import ca.radiant3.redisq.queuing.FIFOQueueDequeueStrategy;
 import ca.radiant3.redisq.queuing.QueueDequeueStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
-import java.util.Collection;
 
 public class RedisMessageQueue implements MessageQueue {
 
     private static final String DEFAULT_CONSUMER_ID =System.getenv("HOSTNAME");
 
-    @Autowired
     private RedisOps redisOps;
 
     private String queueName;

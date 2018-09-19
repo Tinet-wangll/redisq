@@ -1,18 +1,16 @@
 package ca.radiant3.redisq.producer;
 
+import java.util.Collection;
+
 import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.persistence.RedisOps;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Collection;
 
 /**
  * Submits messages to all registered consumers on a queue.
  */
 public class MultiConsumerSubmissionStrategy extends SingleConsumerSubmissionStrategy {
 
-    @Autowired
     public MultiConsumerSubmissionStrategy(RedisOps redisOps) {
         super(redisOps);
     }

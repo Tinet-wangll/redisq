@@ -1,11 +1,11 @@
 package ca.radiant3.redisq.queuing;
 
-import ca.radiant3.redisq.persistence.RedisOps;
-import ca.radiant3.redisq.consumer.MessageCallback;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.radiant3.redisq.consumer.MessageCallback;
+import ca.radiant3.redisq.persistence.RedisOps;
 
 /**
  * Queue/Dequeue strategy that works upon FIFO principles (First In First Out).
@@ -25,7 +25,6 @@ public class FIFOQueueDequeueStrategy implements QueueDequeueStrategy {
      */
     private long dequeueTimeoutSeconds = 1;
 
-    @Autowired
     public FIFOQueueDequeueStrategy(RedisOps redisOps) {
         this.redisOps = redisOps;
     }

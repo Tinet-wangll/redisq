@@ -1,12 +1,11 @@
 package ca.radiant3.redisq.consumer;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
 import ca.radiant3.redisq.Message;
@@ -42,7 +41,7 @@ import ca.radiant3.redisq.utils.GenericsUtils;
  * @see FIFOQueueDequeueStrategy
  * @see LockingQueueDequeueStrategyWrapper
  */
-public class MessageConsumer<T> {
+public class MessageConsumer<T> implements DisposableBean {
 
     private static final Logger log = LoggerFactory.getLogger(MessageConsumer.class);
 
@@ -54,7 +53,6 @@ public class MessageConsumer<T> {
     private MessageRetryStrategy<T> retryStrategy = new NoRetryStrategy<T>();
     private ConnectionFailureHandler connectionFailureHandler = new DefaultConnectionFailureHandler(log);
 
-    @Autowired
     private RedisOps redisOps;
 
     private Class<T> payloadType;
@@ -117,12 +115,6 @@ public class MessageConsumer<T> {
         });
     }
 
-    @PreDestroy
-    public void stopConsumer() {
-    	deleteRegistered();
-        threadingStrategy.stop();
-    }
-
     protected void processNextMessage() {
 
         queue.dequeue(consumerId, new MessageCallback() {
@@ -183,4 +175,10 @@ public class MessageConsumer<T> {
     public void setRetryStrategy(MessageRetryStrategy retryStrategy) {
         this.retryStrategy = retryStrategy;
     }
+
+	public void destroy() throws Exception {
+    	log.info("begin  PreDestroy:deleteRegistered");
+    	deleteRegistered();
+        threadingStrategy.stop();
+	}
 }

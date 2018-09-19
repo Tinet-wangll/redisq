@@ -1,10 +1,10 @@
 package ca.radiant3.redisq.queuing;
 
-import ca.radiant3.redisq.consumer.MessageCallback;
-import ca.radiant3.redisq.persistence.RedisOps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.radiant3.redisq.consumer.MessageCallback;
+import ca.radiant3.redisq.persistence.RedisOps;
 
 /**
  * Implementation of a random queue.
@@ -33,7 +33,6 @@ public class RandomQueueDequeueStrategy implements QueueDequeueStrategy {
      */
     private long dequeueBatchSize = -1;
 
-    @Autowired
     public RandomQueueDequeueStrategy(RedisOps redisOps) {
         this.redisOps = redisOps;
     }

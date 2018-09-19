@@ -40,7 +40,7 @@ public class ConsumerSteps {
 
         for (List<MessageConsumer> consumers : consumersById.values()) {
             for (MessageConsumer consumer : consumers) {
-                consumer.stopConsumer();
+//                consumer.stopConsumer();
             }
         }
 
