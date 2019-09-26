@@ -17,11 +17,13 @@ public class SingleConsumerSubmissionStrategy implements SubmissionStrategy {
         this.redisOps = redisOps;
     }
 
+    @Override
     public void submit(MessageQueue queue, Message<?> message) {
 
         submit(queue, message, queue.getDefaultConsumerId());
     }
 
+    @Override
     public void submit(MessageQueue queue, Message<?> message, String consumer) {
 
         queue.enqueue(message, consumer);

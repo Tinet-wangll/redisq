@@ -18,6 +18,7 @@ public class JaxbPayloadSerializer implements PayloadSerializer {
 
     private static final int INITIAL_BUFFER_SIZE = 1024;
 
+    @Override
     public String serialize(Object payload) {
         Class<?> payloadType = payload.getClass();
         try {
@@ -35,6 +36,7 @@ public class JaxbPayloadSerializer implements PayloadSerializer {
         }
     }
 
+    @Override
     public <T> T deserialize(String payload, Class<T> payloadType) {
         try {
             JAXBContext context = JAXBContext.newInstance(payloadType);

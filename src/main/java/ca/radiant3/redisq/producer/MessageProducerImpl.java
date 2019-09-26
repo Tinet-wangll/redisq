@@ -28,10 +28,12 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
         }
     }
 
+    @Override
     public void submit(T payload) {
         create(payload).submit();
     }
 
+    @Override
     public MessageSender<T> create(T payload) {
         return new DefaultMessageSender(payload);
     }
@@ -76,17 +78,20 @@ public class MessageProducerImpl<T> implements MessageProducer<T> {
             this.timeToLiveUnit = defaultTimeToLiveUnit;
         }
 
+        @Override
         public MessageSender<T> withTimeToLive(long time, TimeUnit unit) {
             this.timeToLive = time;
             this.timeToLiveUnit = unit;
             return this;
         }
 
+        @Override
         public MessageSender<T> withTargetConsumer(String consumerId) {
             this.targetConsumer = consumerId;
             return this;
         }
 
+        @Override
         public void submit() {
             long ttlSeconds = timeToLiveUnit.toSeconds(timeToLive);
 

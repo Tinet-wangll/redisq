@@ -8,6 +8,7 @@ import java.io.IOException;
 public class JacksonPayloadSerializer implements PayloadSerializer {
     private ObjectMapper mapper = new ObjectMapper();
 
+    @Override
     public String serialize(Object payload) throws SerializationException {
         try {
             return mapper.writeValueAsString(payload);
@@ -16,6 +17,7 @@ public class JacksonPayloadSerializer implements PayloadSerializer {
         }
     }
 
+    @Override
     public <T> T deserialize(String payload, Class<T> type) throws SerializationException {
         if (payload == null) {
             return null;

@@ -13,6 +13,7 @@ public class DefaultMessageConverter implements MessageConverter {
     static final String TTL_HASH_KEY = "ttl";
     static final String RETRY_COUNT = "retries";
 
+    @Override
     public Map<String, String> toMap(Message message, PayloadSerializer payloadSerializer) {
         String payloadAsText = payloadSerializer.serialize(message.getPayload());
 
@@ -28,6 +29,7 @@ public class DefaultMessageConverter implements MessageConverter {
         return data;
     }
 
+    @Override
     public <T> Message<T> toMessage(Map<String, String> data, Class<T> payloadType, PayloadSerializer payloadSerializer) {
         if (data == null || data.isEmpty()) {
             return null;

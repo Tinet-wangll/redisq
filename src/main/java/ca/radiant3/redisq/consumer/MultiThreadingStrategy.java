@@ -24,6 +24,7 @@ public class MultiThreadingStrategy implements ThreadingStrategy {
         this.dequeueThreads = new ArrayList<DequeueThread>(numThreads);
     }
 
+    @Override
     public void start(String queueName, Runnable callback) {
         for (int i = 0; i < numThreads; i++) {
             DequeueThread dequeueThread = new DequeueThread(callback);
@@ -37,6 +38,7 @@ public class MultiThreadingStrategy implements ThreadingStrategy {
         }
     }
 
+    @Override
     public void stop() {
         try {
             for (DequeueThread dequeueThread : dequeueThreads) {

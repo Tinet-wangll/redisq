@@ -7,7 +7,7 @@ import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.persistence.RedisOps;
 
-public class MaxRetriesStrategy<T> implements MessageRetryStrategy<T>{
+public class MaxRetriesStrategy<T> implements MessageRetryStrategy<T> {
 
     private static final Logger log = LoggerFactory.getLogger(MaxRetriesStrategy.class);
 
@@ -19,6 +19,7 @@ public class MaxRetriesStrategy<T> implements MessageRetryStrategy<T>{
         this.maxRetries = maxRetries;
     }
 
+    @Override
     public void retry(Message<T> message, MessageQueue queue, String consumerId) {
         int currentRetries = message.getRetryCount();
 

@@ -29,6 +29,7 @@ public class FIFOQueueDequeueStrategy implements QueueDequeueStrategy {
         this.redisOps = redisOps;
     }
 
+    @Override
     public void enqueueMessage(String queueName, String consumerId, String messageId) {
 
         log.debug(String.format("[FIFO] Enqueuing message ID [%s] to queue [%s(%s)]", messageId, queueName, consumerId));
@@ -36,6 +37,7 @@ public class FIFOQueueDequeueStrategy implements QueueDequeueStrategy {
         redisOps.enqueueMessageAtTail(queueName, consumerId, messageId);
     }
 
+    @Override
     public void dequeueNextMessage(String queueName, String consumerId, MessageCallback callback) {
 
         String messageId = redisOps.dequeueMessageFromHead(queueName, consumerId, dequeueTimeoutSeconds);

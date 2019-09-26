@@ -12,11 +12,12 @@ public class Jackson2PayloadSerializer implements PayloadSerializer {
     private ObjectMapper mapper;
 
     public Jackson2PayloadSerializer() {
-    	mapper = new ObjectMapper();
-    	mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
-	}
+        mapper = new ObjectMapper();
+        mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+    }
 
-	public String serialize(Object payload) throws SerializationException {
+    @Override
+    public String serialize(Object payload) throws SerializationException {
         try {
             return mapper.writeValueAsString(payload);
         } catch (IOException e) {
@@ -24,6 +25,7 @@ public class Jackson2PayloadSerializer implements PayloadSerializer {
         }
     }
 
+    @Override
     public <T> T deserialize(String payload, Class<T> type) throws SerializationException {
         if (payload == null) {
             return null;

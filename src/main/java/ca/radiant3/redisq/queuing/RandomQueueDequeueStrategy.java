@@ -37,6 +37,7 @@ public class RandomQueueDequeueStrategy implements QueueDequeueStrategy {
         this.redisOps = redisOps;
     }
 
+    @Override
     public void enqueueMessage(String queueName, String consumerId, String messageId) {
 
         log.debug(String.format("[Random] Enqueuing message ID [%s] to queue [%s(%s)]", messageId, queueName, consumerId));
@@ -45,6 +46,7 @@ public class RandomQueueDequeueStrategy implements QueueDequeueStrategy {
         redisOps.notifyWaitersOnSet(queueName, consumerId);
     }
 
+    @Override
     public void dequeueNextMessage(String queueName, String consumerId, MessageCallback callback) {
 
         boolean isBatched = (dequeueBatchSize > 0);

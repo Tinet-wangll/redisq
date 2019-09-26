@@ -13,10 +13,12 @@ public class GsonPayloadSerializer implements PayloadSerializer {
 
     private Gson serializer = new Gson();
 
+    @Override
     public String serialize(Object payload) throws SerializationException {
         return serializer.toJson(payload);
     }
 
+    @Override
     public <T> T deserialize(String payload, Class<T> type) throws SerializationException {
         return serializer.fromJson(payload, type);
     }

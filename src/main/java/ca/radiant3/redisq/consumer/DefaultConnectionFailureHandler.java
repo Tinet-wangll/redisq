@@ -40,6 +40,7 @@ public class DefaultConnectionFailureHandler implements ConnectionFailureHandler
         this.connectionFailuresBeforeErrorLog = DEFAULT_CONNECTION_FAILURES_BEFORE_ERROR_LOG;
     }
 
+    @Override
     public void serverConnectionFailed(RedisConnectionFailureException e) {
         int count = incrementFailureCounterAndGetCount();
 

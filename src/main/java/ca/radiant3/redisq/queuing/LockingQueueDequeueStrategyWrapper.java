@@ -33,6 +33,7 @@ public class LockingQueueDequeueStrategyWrapper implements QueueDequeueStrategy 
         }
     }
 
+    @Override
     public void dequeueNextMessage(String queueName, String consumerId, MessageCallback callback) {
 
         boolean lockAcquired = redisOps.tryObtainLockForQueue(queueName, consumerId, lockExpirationTimeout, lockExpirationTimeoutUnit);
@@ -51,6 +52,7 @@ public class LockingQueueDequeueStrategyWrapper implements QueueDequeueStrategy 
         }
     }
 
+    @Override
     public void enqueueMessage(String queueName, String consumerId, String messageId) {
         wrapped.enqueueMessage(queueName, consumerId, messageId);
     }

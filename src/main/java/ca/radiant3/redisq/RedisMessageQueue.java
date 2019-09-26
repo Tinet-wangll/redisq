@@ -11,7 +11,7 @@ import ca.radiant3.redisq.queuing.QueueDequeueStrategy;
 
 public class RedisMessageQueue implements MessageQueue {
 
-    private static final String DEFAULT_CONSUMER_ID =System.getenv("HOSTNAME");
+    private static final String DEFAULT_CONSUMER_ID = System.getenv("HOSTNAME");
 
     private RedisOps redisOps;
 
@@ -28,31 +28,38 @@ public class RedisMessageQueue implements MessageQueue {
         }
     }
 
+    @Override
     public String getQueueName() {
         return queueName;
     }
 
+    @Override
     public Collection<String> getCurrentConsumerIds() {
         return redisOps.getRegisteredConsumers(queueName);
     }
 
+    @Override
     public long getSize() {
         return getSizeForConsumer(getDefaultConsumerId());
     }
 
+    @Override
     public long getSizeForConsumer(String consumerId) {
         Long size = redisOps.getQueueSizeForConsumer(queueName, consumerId);
         return (size == null) ? 0 : size;
     }
 
+    @Override
     public void empty() {
         redisOps.emptyQueue(queueName);
     }
 
+    @Override
     public String getDefaultConsumerId() {
         return defaultConsumerId;
     }
 
+    @Override
     public void enqueue(Message<?> message, String... consumers) {
         redisOps.saveMessage(queueName, message);
 
@@ -61,6 +68,7 @@ public class RedisMessageQueue implements MessageQueue {
         }
     }
 
+    @Override
     public void dequeue(String consumer, MessageCallback callback) {
         queueDequeueStrategy.dequeueNextMessage(queueName, consumer, callback);
     }

@@ -75,18 +75,19 @@ public class MessageConsumer<T> implements DisposableBean {
 
         payloadType = extractMessagePayloadTypeFromListener();
 
-        log.info(String.format("Handling payloads from messages in queue [%s] as objects of class [%s]", queueName, payloadType));
+        log.info(String.format("Handling payloads from messages in queue [%s] as objects of class [%s]", queueName,
+                payloadType));
 
         if (autoStartConsumers) {
             startConsumer();
         }
     }
-    
+
     public void deleteRegistered() {
         consumerId = (consumerId == null) ? queue.getDefaultConsumerId() : consumerId;
 
         if (StringUtils.isEmpty(consumerId)) {
-        	log.info(String.format("delete consumer ID [%s]", consumerId));
+            log.info(String.format("delete consumer ID [%s]", consumerId));
             throw new IllegalStateException("Consumer ID is not set but is mandatory.");
         }
 
@@ -105,6 +106,7 @@ public class MessageConsumer<T> implements DisposableBean {
         String queueName = queue.getQueueName();
 
         threadingStrategy.start(queueName, new Runnable() {
+            @Override
             public void run() {
                 try {
                     processNextMessage();
@@ -118,6 +120,7 @@ public class MessageConsumer<T> implements DisposableBean {
     protected void processNextMessage() {
 
         queue.dequeue(consumerId, new MessageCallback() {
+            @Override
             public void handle(String messageId) {
                 Message<T> message = redisOps.loadMessageById(queue.getQueueName(), messageId, payloadType);
                 try {
@@ -176,9 +179,9 @@ public class MessageConsumer<T> implements DisposableBean {
         this.retryStrategy = retryStrategy;
     }
 
-	public void destroy() throws Exception {
-    	log.info("begin  PreDestroy:deleteRegistered");
-    	deleteRegistered();
+    public void destroy() throws Exception {
+        log.info("begin  PreDestroy:deleteRegistered");
+        deleteRegistered();
         threadingStrategy.stop();
-	}
+    }
 }
