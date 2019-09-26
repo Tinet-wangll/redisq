@@ -7,20 +7,13 @@ import static ca.radiant3.redisq.utils.KeysFactory.keyForMessage;
 import static ca.radiant3.redisq.utils.KeysFactory.keyForNextID;
 import static ca.radiant3.redisq.utils.KeysFactory.keyForRegisteredConsumers;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.BoundListOperations;
-import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.*;
 
 import ca.radiant3.redisq.Message;
 import ca.radiant3.redisq.MessageQueue;
@@ -38,22 +31,46 @@ public class RedisOps {
     @Autowired(required = false)
     private MessageConverter messageConverter = new DefaultMessageConverter();
 
+    private long heartbeatInterval = 60000L;
+
     @SuppressWarnings("unchecked")
     public void ensureConsumerRegistered(String queueName, String consumerId) {
-        BoundSetOperations<String, String> ops = redisTemplate.boundSetOps(keyForRegisteredConsumers(queueName));
-        ops.add(consumerId);
+        BoundZSetOperations<String, String> ops = redisTemplate.boundZSetOps(keyForRegisteredConsumers(queueName));
+        ops.add(consumerId, System.currentTimeMillis());
     }
-    
+
     @SuppressWarnings("unchecked")
     public void deleteConsumerRegistered(String queueName, String consumerId) {
-        BoundSetOperations<String, String> ops = redisTemplate.boundSetOps(keyForRegisteredConsumers(queueName));
+        BoundZSetOperations<String, String> ops = redisTemplate.boundZSetOps(keyForRegisteredConsumers(queueName));
         ops.remove(consumerId);
     }
 
     @SuppressWarnings("unchecked")
     public Collection<String> getRegisteredConsumers(String queueName) {
-        BoundSetOperations<String, String> ops = redisTemplate.boundSetOps(keyForRegisteredConsumers(queueName));
-        return ops.members();
+        BoundZSetOperations<String, String> ops = redisTemplate.boundZSetOps(keyForRegisteredConsumers(queueName));
+        return ops.range(0, -1);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updateConsumerRegistered(String queueName, String consumerId) {
+        BoundZSetOperations<String, String> ops = redisTemplate.boundZSetOps(keyForRegisteredConsumers(queueName));
+        ops.incrementScore(consumerId, heartbeatInterval);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void removeExpireRegisteredConsumers(String queueName) {
+        BoundZSetOperations<String, String> zSetOps = redisTemplate.boundZSetOps(keyForRegisteredConsumers(queueName));
+
+        Set<String> expireKeys = zSetOps.rangeByScore(0, System.currentTimeMillis() - (heartbeatInterval * 10));
+
+        if (Objects.nonNull(expireKeys) && !expireKeys.isEmpty()) {
+            // 移除十分钟以外没有心跳的的消费者
+            zSetOps.removeRangeByScore(0, System.currentTimeMillis() - (heartbeatInterval * 10));
+            // 移除对应消费者的消息队列
+            for (String expireKey : expireKeys) {
+                redisTemplate.delete(keyForConsumerSpecificQueue(queueName, expireKey));
+            }
+        }
     }
 
     public <T> String addMessage(String queueName, Message<T> message) {
@@ -112,9 +129,10 @@ public class RedisOps {
 
     /**
      * @param rangeStart zero-based index of first item to retrieve
-     * @param rangeEnd zero-based index of last item to retrieve
+     * @param rangeEnd   zero-based index of last item to retrieve
      */
-    public <T> List<Message<T>> peekMessagesInQueue(String queueName, String consumerId, long rangeStart, long rangeEnd, Class<T> payloadType) {
+    public <T> List<Message<T>> peekMessagesInQueue(String queueName, String consumerId, long rangeStart,
+                                                    long rangeEnd, Class<T> payloadType) {
 
         String queueKey = keyForConsumerSpecificQueue(queueName, consumerId);
 
@@ -130,11 +148,14 @@ public class RedisOps {
 
     /**
      * Peeks messages in the specified queue (for the default consumer).
+     *
      * @param rangeStart zero-based index of first item to retrieve
-     * @param rangeEnd zero-based index of last item to retrieve
+     * @param rangeEnd   zero-based index of last item to retrieve
      */
-    public <T> List<Message<T>> peekMessagesInQueue(MessageQueue queue, long rangeStart, long rangeEnd, Class<T> payloadType) {
-        return peekMessagesInQueue(queue.getQueueName(), queue.getDefaultConsumerId(), rangeStart, rangeEnd, payloadType);
+    public <T> List<Message<T>> peekMessagesInQueue(MessageQueue queue, long rangeStart, long rangeEnd,
+                                                    Class<T> payloadType) {
+        return peekMessagesInQueue(queue.getQueueName(), queue.getDefaultConsumerId(), rangeStart, rangeEnd,
+                payloadType);
     }
 
     public void emptyQueue(String queueName) {
@@ -197,7 +218,8 @@ public class RedisOps {
     }
 
     public boolean tryObtainLockForQueue(String queueName, String consumerId, long expirationTimeout, TimeUnit unit) {
-        BoundValueOperations<String, Integer> ops = redisTemplate.boundValueOps(keyForConsumerSpecificQueueLock(queueName, consumerId));
+        BoundValueOperations<String, Integer> ops =
+                redisTemplate.boundValueOps(keyForConsumerSpecificQueueLock(queueName, consumerId));
 
         boolean lockAcquired = ops.setIfAbsent(1);
         if (lockAcquired) {
@@ -213,5 +235,13 @@ public class RedisOps {
 
     public void setRedisTemplate(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+
+    public long getHeartbeatInterval() {
+        return heartbeatInterval;
+    }
+
+    public void setHeartbeatInterval(long heartbeatInterval) {
+        this.heartbeatInterval = heartbeatInterval;
     }
 }

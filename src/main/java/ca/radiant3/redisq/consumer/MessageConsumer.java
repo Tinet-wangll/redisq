@@ -19,6 +19,8 @@ import ca.radiant3.redisq.queuing.FIFOQueueDequeueStrategy;
 import ca.radiant3.redisq.queuing.LockingQueueDequeueStrategyWrapper;
 import ca.radiant3.redisq.utils.GenericsUtils;
 
+import java.util.Objects;
+
 /**
  * A message consumer monitors messages from a MessageQueue continuously, and when a message
  * is found, delegates the actual processing of the message to a configured MessageListener.
@@ -53,6 +55,8 @@ public class MessageConsumer<T> implements DisposableBean {
     private MessageRetryStrategy<T> retryStrategy = new NoRetryStrategy<T>();
     private ConnectionFailureHandler connectionFailureHandler = new DefaultConnectionFailureHandler(log);
 
+    private HeartbeatStrategy heartbeatStrategy;
+
     private RedisOps redisOps;
 
     private Class<T> payloadType;
@@ -80,6 +84,11 @@ public class MessageConsumer<T> implements DisposableBean {
 
         if (autoStartConsumers) {
             startConsumer();
+        }
+
+        if (redisOps.getHeartbeatInterval() > 0) {
+            heartbeatStrategy = new HeartbeatStrategy(redisOps, queue);
+            heartbeatStrategy.start();
         }
     }
 
@@ -179,9 +188,15 @@ public class MessageConsumer<T> implements DisposableBean {
         this.retryStrategy = retryStrategy;
     }
 
+    @Override
     public void destroy() throws Exception {
         log.info("begin  PreDestroy:deleteRegistered");
         deleteRegistered();
         threadingStrategy.stop();
+
+        if (heartbeatStrategy.isAlive()) {
+            heartbeatStrategy.interrupt();
+        }
+
     }
 }

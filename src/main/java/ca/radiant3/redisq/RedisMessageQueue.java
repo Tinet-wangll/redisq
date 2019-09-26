@@ -66,6 +66,8 @@ public class RedisMessageQueue implements MessageQueue {
         for (String consumer : consumers) {
             queueDequeueStrategy.enqueueMessage(queueName, consumer, message.getId());
         }
+        // 移除过期消费者
+        redisOps.removeExpireRegisteredConsumers(queueName);
     }
 
     @Override
