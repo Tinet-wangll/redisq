@@ -6,7 +6,7 @@
 
     <groupId>ca.radiant3</groupId>
     <artifactId>redisq</artifactId>
-    <version>1.6.1-TINET</version>
+    <version>1.6.2-TINET</version>
     <packaging>jar</packaging>
 
     <properties>

@@ -88,7 +88,7 @@ public class MessageConsumer<T> implements DisposableBean {
 
         if (redisOps.getHeartbeatInterval() > 0) {
             log.info("Uses Heartbeat Interval: [{}]", redisOps.getHeartbeatInterval());
-            heartbeatStrategy = new HeartbeatStrategy(redisOps, queue);
+            heartbeatStrategy = new HeartbeatStrategy(redisOps, queueName, consumerId);
             heartbeatStrategy.start();
         }
     }

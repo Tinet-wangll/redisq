@@ -2,6 +2,11 @@ package ca.radiant3.redisq.consumer;
 
 import ca.radiant3.redisq.MessageQueue;
 import ca.radiant3.redisq.persistence.RedisOps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 
 /**
  * 消费者心跳策略，每个消费者会定时（60s）上报自己的状态，
@@ -11,23 +16,35 @@ import ca.radiant3.redisq.persistence.RedisOps;
  */
 public class HeartbeatStrategy extends Thread {
 
+    private static final Logger log = LoggerFactory.getLogger(HeartbeatStrategy.class);
 
     private RedisOps redisOps;
 
-    private MessageQueue queue;
+    private String queueName;
 
-    HeartbeatStrategy(RedisOps redisOps, MessageQueue queue) {
+    private String consumerId;
+
+
+    HeartbeatStrategy(RedisOps redisOps, String queueName, String consumerId) {
         this.redisOps = redisOps;
-        this.queue = queue;
+        this.queueName = queueName;
+        this.consumerId = consumerId;
     }
 
     @Override
     public void run() {
-        redisOps.updateConsumerRegistered(queue.getQueueName(), queue.getDefaultConsumerId());
-        try {
-            Thread.sleep(redisOps.getHeartbeatInterval());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (!this.isInterrupted()) {
+
+            try {
+                Thread.sleep(redisOps.getHeartbeatInterval());
+
+                log.debug("updateConsumerRegistered QueueName: {} ConsumerId: {}", queueName, consumerId);
+                redisOps.updateConsumerRegistered(queueName, consumerId);
+
+            } catch (InterruptedException e) {
+                log.info("InterruptedException invoke interrupt");
+                this.interrupt();
+            }
         }
     }
 }

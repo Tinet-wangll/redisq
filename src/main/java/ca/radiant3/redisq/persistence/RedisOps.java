@@ -21,6 +21,7 @@ import ca.radiant3.redisq.serialization.DefaultMessageConverter;
 import ca.radiant3.redisq.serialization.Jackson2PayloadSerializer;
 import ca.radiant3.redisq.serialization.MessageConverter;
 import ca.radiant3.redisq.serialization.PayloadSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 public class RedisOps {
 
@@ -54,7 +55,7 @@ public class RedisOps {
     @SuppressWarnings("unchecked")
     public void updateConsumerRegistered(String queueName, String consumerId) {
         BoundZSetOperations<String, String> ops = redisTemplate.boundZSetOps(keyForRegisteredConsumers(queueName));
-        ops.incrementScore(consumerId, heartbeatInterval);
+        ops.add(consumerId, System.currentTimeMillis());
     }
 
     @SuppressWarnings("unchecked")
