@@ -21,6 +21,7 @@ import ca.radiant3.redisq.serialization.DefaultMessageConverter;
 import ca.radiant3.redisq.serialization.Jackson2PayloadSerializer;
 import ca.radiant3.redisq.serialization.MessageConverter;
 import ca.radiant3.redisq.serialization.PayloadSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 public class RedisOps {
@@ -69,7 +70,14 @@ public class RedisOps {
             zSetOps.removeRangeByScore(0, System.currentTimeMillis() - (heartbeatInterval * 10));
             // 移除对应消费者的消息队列
             for (String expireKey : expireKeys) {
-                redisTemplate.delete(keyForConsumerSpecificQueue(queueName, expireKey));
+                String consumerQueueName = keyForConsumerSpecificQueue(queueName, expireKey);
+                BoundListOperations<String, String> ops = redisTemplate.boundListOps(consumerQueueName);
+                /*
+                  有的同学可能会问了 为什么不直接使用
+                  {@code redisTemplate.delete(consumerQueueName);}
+                  那是因为会报错啊，不信你们就试试
+                 */
+                ops.getOperations().delete(consumerQueueName);
             }
         }
     }
