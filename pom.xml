@@ -9,6 +9,15 @@
     <version>1.6.2-TINET</version>
     <packaging>jar</packaging>
 
+
+    <!-- 配置远程发布到私服，mvn deploy -->
+    <distributionManagement>
+        <repository>
+            <id>aws</id>
+            <url>http://dev.clink.cn:8081/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <spring.version>5.0.8.RELEASE</spring.version>
     </properties>
@@ -92,8 +101,9 @@
         </dependency>
     </dependencies>
 
+
     <build>
-	    <plugins>
+        <plugins>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <configuration>
