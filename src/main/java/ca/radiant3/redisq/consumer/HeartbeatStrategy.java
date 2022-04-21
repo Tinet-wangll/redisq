@@ -44,6 +44,8 @@ public class HeartbeatStrategy extends Thread {
             } catch (InterruptedException e) {
                 log.info("InterruptedException invoke interrupt");
                 this.interrupt();
+            } catch (Exception e) {
+                log.info("Exception", e);
             }
         }
     }
